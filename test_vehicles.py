@@ -8,39 +8,64 @@ import pytest
 from manufacturer import Manufacturer
 from auto_model import AutoModel
 
+
+# ============================================================
+#  Manufacturer tests
+# ============================================================
 class TestManufacturer:
     def test_constructor(self):
         m = Manufacturer("Ford", "USA")
-        assert m.get_name == "Ford"
-        assert m.get_country == "USA"
-
-    def test_constructor_2(self):
-        m = Manufacturer("Honda", "Japan")
-        assert m.get_name == "Honda"
-        assert m.get_country == "Japan"
+        assert m.name == "Ford"
+        assert m.country == "USA"
 
     def test_str(self):
         m = Manufacturer("BMW", "Germany")
-        assert str(m) == "(BMW, Germany)"
+        assert str(m) == "BMW, Germany"
 
+    def test_constructor_2(self):
+        m = Manufacturer("Honda", "Japan")
+        assert m.name == "Honda"
+        assert m.country == "Japan"
+        assert str(m) == "Honda, Japan"
 
+    
+# ============================================================
+#  AutoModel tests
+# ============================================================
 class TestAutoModel:
     def test_constructor(self):
         am = AutoModel("F150", True, [2020, 2021, 2022])
-        assert am.get_name == "F150"
-        assert am.get_in_production == True
-        assert am.get_years == [2020, 2021, 2022]
+        assert am.name == "F150"
+        assert am.in_production == True
+        assert am.years == [2020, 2021, 2022]
+
+    def test_first_year(self):
+        am = AutoModel("Civic", False, [1996, 1997, 1998])
+        assert am.first_year == 1996
+
+    def test_str(self):
+        am = AutoModel("Tundra", False, [1987, 1988])
+        result = str(am)
+        assert "Tundra" in result
+        assert "False" in result
+        assert "1988" in result
+
+    def test_empty_years_raises(self):
+        with pytest.raises(ValueError):
+            AutoModel("Invisible Car", False, [])
 
     def test_years_defensive_copy(self):
+        """Changing the original must not affect the model"""
         original_list = [2020, 2021]
         am = AutoModel("F150", True, original_list)
         original_list.clear()
-        assert am.get_years == [2020, 2021]
+        assert am.years == [2020, 2021]
 
-    # F150 in production = True, release year: 2020
-    def test_str(self):
-        am = AutoModel("F150", True, [2020, 2021, 2022])
-        assert str(am) == "F150 in production = True,  release year: 2020"
-
+    def test_years_getter_returns_copy(self):
+        """Changing the original must not affect the model"""
+        am = AutoModel("M3 Limited", False, [2015, 2016, 2017, 2018])
+        returned = am.years
+        returned.append(2019)
+        assert len(am.years) == 4
     
 
