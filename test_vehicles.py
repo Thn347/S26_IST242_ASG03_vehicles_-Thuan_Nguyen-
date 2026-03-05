@@ -7,6 +7,10 @@ import pytest
 
 from manufacturer import Manufacturer
 from auto_model import AutoModel
+from vehicle import Vehicle
+# from sedan import Sedan
+# from truck import Truck
+# from garage import Garage
 
 
 # ============================================================
@@ -48,7 +52,7 @@ class TestAutoModel:
         result = str(am)
         assert "Tundra" in result
         assert "False" in result
-        assert "1988" in result
+        assert "1987" in result
 
     def test_empty_years_raises(self):
         with pytest.raises(ValueError):
@@ -67,5 +71,29 @@ class TestAutoModel:
         returned = am.years
         returned.append(2019)
         assert len(am.years) == 4
-    
 
+
+# ============================================================
+#  Vehicle / abstract contract tests
+# ============================================================
+class TestVehicleAbstract:
+    def test_vehicle_cannot_be_directly_initialized(self):
+        """Vehicle is abstract and should not be directly initialized"""
+        with pytest.raises(TypeError):
+            Vehicle(
+                Manufacturer("Xavier", "Yelan"),
+                AutoModel("Zhongli", True, [2025]),
+                25.0
+            )
+
+    def test_subclass_must_implement_number_of_wheels(self):
+        """A subclass that does not have number_of_wheels should not work"""
+        # This incomplete version should raise TypeError
+        with pytest.raises(TypeError):
+            class Incompletion(Vehicle):
+                pass
+            Incompletion(
+                Manufacturer("Xavier", "Yelan"),
+                AutoModel("Zhongli", True, [2025]),
+                30.0
+            )
