@@ -9,7 +9,7 @@ from manufacturer import Manufacturer
 from auto_model import AutoModel
 from vehicle import Vehicle
 from sedan import Sedan
-# from truck import Truck
+from truck import Truck
 # from garage import Garage
 
 
@@ -144,3 +144,66 @@ class TestM3Limited:
     def test_is_instance_of_vehicle(self, m3):
         assert isinstance(m3, Vehicle)
  
+
+# ============================================================
+#  Truck tests
+# ============================================================
+class TestTruck:
+    @pytest.fixture
+    def f150(self):
+        return Truck(
+            Manufacturer("Ford", "USA"),
+            AutoModel("F150", True, [2020, 2021, 2022]),
+            20.0,
+        )
+
+    @pytest.fixture
+    def tundra(self):
+        return Truck(
+            Manufacturer("Toyota", "Japan"),
+            AutoModel("Tundra", False, [1987, 1988]),
+            30.0,
+            is_dually=True,
+        )
+
+    # not dually
+    def test_default_not_dually(self, f150):
+        assert f150.is_dually is False
+
+    def test_wheels_non_dually(self, f150):
+        assert f150.number_of_wheels() == 4
+
+    def test_release_year_f150(self, f150):
+        assert f150.release_year == 2020
+
+    def test_str_non_dually(self, f150):
+        s = str(f150)
+        assert "(Ford, USA)" in s
+        assert "F150" in s
+        assert "20.00" in s
+        assert "False" in s
+
+    # dually
+    def test_is_dually_true(self, tundra):
+        assert tundra.is_dually is True
+
+    def test_wheels_dually(self, tundra):
+        assert tundra.number_of_wheels() == 6
+
+    def test_release_year_tundra(self, tundra):
+        assert tundra.release_year == 1987
+
+    def test_str_dually(self, tundra):
+        s = str(tundra)
+        assert "(Toyota, Japan)" in s
+        assert "Tundra" in s
+        assert "30.00" in s
+        assert "True" in s
+
+    def test_how_far_with(self, tundra):
+        assert tundra.how_far_with(6) == pytest.approx(180.0)
+
+    def test_is_instance_of_vehicle(self, f150):
+        assert isinstance(f150, Vehicle)
+
+
